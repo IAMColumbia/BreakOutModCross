@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MonoGameLibrary.Sprite;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using MonoGameLibrary.Sprite;
 using MonoGameLibrary.Util;
 
 
 namespace BreakoutBoring
 {
-    public enum BallState {  OnPaddleStart, Playing }
+    public enum BallState { OnPaddleStart, Playing }
 
     public class Ball : DrawableSprite
     {
-        
+
         public BallState State { get; private set; }
 
         GameConsole console;
@@ -46,6 +40,9 @@ namespace BreakoutBoring
         public void LaunchBall(GameTime gameTime)
         {
             this.Speed = 190; //hard coded speed TODO fix this
+#if DEBUG
+            this.Speed *=2; //double speed in debug mode
+#endif
             this.Direction = new Vector2(1, -1); //hard coded launch direction TODO fix this
             this.State = BallState.Playing;
             this.console.GameConsoleWrite("Ball Launched " + gameTime.TotalGameTime.ToString());
@@ -61,13 +58,13 @@ namespace BreakoutBoring
         private void resetBall(GameTime gameTime)
         {
             this.Speed = 0;
-            this.State =  BallState.OnPaddleStart;
+            this.State = BallState.OnPaddleStart;
             this.console.GameConsoleWrite("Ball Reset " + gameTime.TotalGameTime.ToString());
         }
 
         public override void Update(GameTime gameTime)
         {
-            switch(this.State)
+            switch (this.State)
             {
                 case BallState.OnPaddleStart:
                     break;
@@ -76,7 +73,7 @@ namespace BreakoutBoring
                     UpdateBall(gameTime);
                     break;
             }
-            
+
             base.Update(gameTime);
         }
 

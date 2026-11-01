@@ -8,6 +8,7 @@ namespace BreakoutBoring
     {
         InputHandler input;
         Ball ball; //may should delgate to parent
+        public bool wantsautopaddle; //cheat
         public Vector2 Direction { get; private set; }
 
         public PaddleController(Game game, Ball ball)
@@ -38,6 +39,12 @@ namespace BreakoutBoring
                 if (ball.State == BallState.OnPaddleStart) //Only Launch Ball is it's on paddle
                     this.ball.LaunchBall(gametime);
             }
+#if DEBUG
+            if (input.KeyboardState.WasKeyPressed(Keys.S) || input.KeyboardState.IsKeyDown(Keys.Down))
+            {
+                wantsautopaddle = !wantsautopaddle; //toggle autopaddle cheat
+            }
+#endif
         }
     }
 }
