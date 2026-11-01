@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MonoGameLibrary.Sprite;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using MonoGameLibrary.Sprite;
 using MonoGameLibrary.Util;
+using System;
 
 namespace BreakoutBoring
 {
@@ -21,13 +16,18 @@ namespace BreakoutBoring
         Ball ball;      //Need reference to ball for collision
 
         bool autopaddle;  //cheat
-        
+
+
         public Paddle(Game game, Ball b)
             : base(game)
         {
-
-            this.autopaddle = true;
             this.Speed = 200;
+
+#if DEBUG
+            this.autopaddle = true;
+            this.Speed *=2; //double speed in debug mode
+#endif
+
             this.ball = b;
             controller = new PaddleController(game, ball);
 
@@ -85,9 +85,9 @@ namespace BreakoutBoring
 
             KeepPaddleOnScreen();
 
-            if(autopaddle && ball.State == BallState.Playing) //Alllow cheating
+            if (autopaddle && ball.State == BallState.Playing) //Alllow cheating
             {
-                this.Location.X = ball.Location.X - ((int)this.spriteTexture.Width/2 * this.scale);
+                this.Location.X = ball.Location.X - ((int)this.spriteTexture.Width / 2 * this.scale);
             }
 
             base.Update(gameTime);
@@ -97,7 +97,7 @@ namespace BreakoutBoring
         {
             ball.Speed = 0;
             ball.Direction = Vector2.Zero;
-            ball.Location = new Vector2(this.Location.X + (this.LocationRect.Width/2 - ball.SpriteTexture.Width/2), this.Location.Y - ball.SpriteTexture.Height);
+            ball.Location = new Vector2(this.Location.X + (this.LocationRect.Width / 2 - ball.SpriteTexture.Width / 2), this.Location.Y - ball.SpriteTexture.Height);
         }
 
         private void UpdateCheckBallCollision()

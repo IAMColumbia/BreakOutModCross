@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using MonoGameLibrary.Util;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using MonoGameLibrary.Util;
 
 namespace BreakoutBoring
 {
@@ -27,18 +22,18 @@ namespace BreakoutBoring
             this.Direction = Vector2.Zero;  //Start with no direction on each new upafet
 
             //No need to sum input only uses left and right
-            if (input.KeyboardState.IsKeyDown(Keys.Left))
+            if (input.KeyboardState.IsKeyDown(Keys.Left) || input.KeyboardState.IsKeyDown(Keys.A))
             {
                 this.Direction = new Vector2(-1, 0);
             }
-            if (input.KeyboardState.IsKeyDown(Keys.Right))
+            if (input.KeyboardState.IsKeyDown(Keys.Right) || input.KeyboardState.IsKeyDown(Keys.D))
             {
                 this.Direction = new Vector2(1, 0);
             }
             //TODO add mouse controll?
 
             //Up launches ball
-            if (input.KeyboardState.WasKeyPressed(Keys.Up))
+            if (input.KeyboardState.WasKeyPressed(Keys.Up) || input.KeyboardState.IsKeyDown(Keys.W))
             {
                 if (ball.State == BallState.OnPaddleStart) //Only Launch Ball is it's on paddle
                     this.ball.LaunchBall(gametime);
