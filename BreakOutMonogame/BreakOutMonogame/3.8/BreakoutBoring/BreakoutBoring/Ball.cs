@@ -49,7 +49,7 @@ namespace BreakoutBoring
         {
             this.Speed = 190; //hard coded speed TODO fix this
 #if DEBUG
-            this.Speed *= 2; //double speed in debug mode
+            this.Speed *= 3; //double speed in debug mode
 #endif
             this.Direction = new Vector2(1, -1); //hard coded launch direction TODO fix this
             this.State = BallState.Playing;

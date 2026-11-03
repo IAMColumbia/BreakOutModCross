@@ -74,9 +74,11 @@ namespace BreakoutBoring
             base.Update(gameTime);
         }
 
-        public void LoseLife()
+        public void LoseLife() { Lives -= 1; }
+        public void NextLevel()
         {
-            Lives -= 1;
+            Level++;
+
         }
     }
 }

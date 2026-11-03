@@ -25,6 +25,11 @@ namespace BreakoutBoring
 
         ScoreManager score;
         bool gameOver = false;
+        bool onTextScreen = false;
+
+        SpriteFont endScreenFont; // TODO: Add a new font for this screen
+        Texture2D overlayTexture;
+        string endMessage = "";
 
         public Game1()
             : base()
@@ -50,7 +55,7 @@ namespace BreakoutBoring
             paddle = new Paddle(this, ball);
             this.Components.Add(paddle);
 
-            bm = new BlockManager(this, ball);
+            bm = new BlockManager(this, ball, score);
             this.Components.Add(bm);
         }
 
@@ -75,6 +80,10 @@ namespace BreakoutBoring
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            endScreenFont = Content.Load<SpriteFont>("Arial");
+
+            overlayTexture = new Texture2D(GraphicsDevice, 1, 1); // Create a 1x1 texture for the overlay for end text
+            overlayTexture.SetData(new[] { Color.White });
 
             base.LoadContent();
         }
@@ -94,9 +103,22 @@ namespace BreakoutBoring
             {
                 gameOver = true;
                 console.GameConsoleWrite("Lost Game");
-                paddle.Dispose();
-                ball.Dispose();
+                ShowTextScreen("Game Over! Press ESC to exit or ENTER to try again.");
             }
+        }
+
+        public void ShowTextScreen(string message)
+        {
+            foreach (GameComponent component in Components)
+            {
+                component.Enabled = false;
+
+                if (component is DrawableGameComponent drawable)
+                    drawable.Visible = false;
+            }
+            endMessage = message;
+            console.GameConsoleWrite(message);
+            onTextScreen = true;
         }
 
 
@@ -107,12 +129,35 @@ namespace BreakoutBoring
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
             if (score.CheckForEnd())
             {
                 EndGame();
             }
+            if (onTextScreen)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                {
+                    if (gameOver)
+                    {
+                        gameOver = false;
+                        score = new ScoreManager(this);
+                        bm = new BlockManager(this, ball, score);
+                    }
+                    onTextScreen = false;
+                    ball.SetInitialLocation();
+                    paddle.SetInitialLocation();
+                    foreach (GameComponent component in Components)
+                    {
+                        component.Enabled = true;
+                        if (component is DrawableGameComponent drawable)
+                            drawable.Visible = true;
+                    }
+
+                }
+            }
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
             else
             {
                 base.Update(gameTime);

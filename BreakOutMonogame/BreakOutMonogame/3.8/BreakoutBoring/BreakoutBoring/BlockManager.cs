@@ -1,20 +1,22 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-
+/*
+ * check if block is empty after emptying a block, is yes then ask scoremanager to increase level by one. 
+ * blockmanager should base it's block load on scoremanger's level
+ * so then when the level is increased, call blockmanager to load a new level based on the new level number
+ */
 namespace BreakoutBoring
 {
     class BlockManager : DrawableGameComponent
     {
         public List<MonogameBlock> Blocks { get; private set; } //List of Blocks the are managed by Block Manager
+        int Width = 24; //Default Width of Level
+        int Height = 2; //Default Height of Level
+        int Margin = 1; //Default Margin between blocks
 
-        //Dependancy on Ball
+        //Dependancy on Ball & ScoreManager 
         Ball ball;
+        ScoreManager scoreManager;
 
         List<MonogameBlock> blocksToRemove; //list of block to remove probably because they were hit
 
@@ -23,13 +25,14 @@ namespace BreakoutBoring
         /// </summary>
         /// <param name="game">Reference to Game</param>
         /// <param name="ball">Refernce to Ball for collision</param>
-        public BlockManager(Game game, Ball b)
+        public BlockManager(Game game, Ball b, ScoreManager ScoreManager)
             : base(game)
         {
             this.Blocks = new List<MonogameBlock>();
             this.blocksToRemove = new List<MonogameBlock>();
-            
+
             this.ball = b;
+            this.scoreManager = ScoreManager;
         }
 
         public override void Initialize()
@@ -43,7 +46,7 @@ namespace BreakoutBoring
         /// </summary>
         protected virtual void LoadLevel()
         {
-            CreateBlockArrayByWidthAndHeight(24, 2, 1);
+            CreateBlockArrayByWidthAndHeight(Width, Height, Margin);
         }
 
         /// <summary>
@@ -67,7 +70,7 @@ namespace BreakoutBoring
                 }
             }
         }
-        
+
         bool reflected; //the ball should only reflect once even if it hits two bricks
         public override void Update(GameTime gameTime)
         {
@@ -75,7 +78,7 @@ namespace BreakoutBoring
             UpdateCheckBlocksForCollision(gameTime);
             UpdateBlocks(gameTime);
             UpdateRemoveDisabledBlocks();
-            
+
 
             base.Update(gameTime);
         }
@@ -100,6 +103,18 @@ namespace BreakoutBoring
                 ScoreManager.Score++;
             }
             blocksToRemove.Clear();
+            HandleLevelComplete();
+        }
+
+        public void HandleLevelComplete()
+        {
+            if (Blocks.Count == 0)
+            {
+
+                scoreManager.NextLevel();
+                Height++; //increase height of blocks for next simple level
+                LoadLevel();
+            }
         }
 
         private void UpdateCheckBlocksForCollision(GameTime gameTime)
@@ -114,7 +129,7 @@ namespace BreakoutBoring
                     {
                         //hit
                         b.HitByBall(ball);
-                        if(b.BlockState == BlockState.Broken)
+                        if (b.BlockState == BlockState.Broken)
                             blocksToRemove.Add(b);  //Ball is hit add it to remove list
                         if (!reflected) //only reflect once
                         {
@@ -134,7 +149,7 @@ namespace BreakoutBoring
         {
             foreach (var block in this.Blocks)
             {
-                if(block.Visible)   //respect block visible property
+                if (block.Visible)   //respect block visible property
                     block.Draw(gameTime);
             }
             base.Draw(gameTime);
