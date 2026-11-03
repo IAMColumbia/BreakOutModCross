@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MonoGameLibrary.Sprite;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGameLibrary.Util;
 
 
 namespace BreakoutBoring
 {
-    class ScoreManager : DrawableGameComponent
+    public class ScoreManager : DrawableGameComponent
     {
 
         SpriteFont font;
-        public static int Lives;    
+        public static int Lives;
         public static int Level;
         public static int Score;
+        public Game _game;
 
         Texture2D paddle;   //Texture for drawing lives left scoremanager is also the GUI/HUD
 
         SpriteBatch sb;
         Vector2 scoreLoc, livesLoc, levelLoc; //Locations to draw GUI elements
-        
-        
+
+
         public ScoreManager(Game game)
             : base(game)
         {
+            _game = game;
             SetupNewGame();
         }
 
@@ -60,9 +54,29 @@ namespace BreakoutBoring
             }
             sb.DrawString(font, "Lives: " + Lives, livesLoc, Color.White);
             sb.DrawString(font, "Score: " + Score, scoreLoc, Color.White);
-            sb.DrawString(font, "Level: " + Level, levelLoc, Color.White); 
+            sb.DrawString(font, "Level: " + Level, levelLoc, Color.White);
             sb.End();
             base.Draw(gameTime);
+            //after finsihing draw, check for game end
+        }
+
+        public bool CheckForEnd()
+        {
+            if (Lives <= 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
+
+        public void LoseLife()
+        {
+            Lives -= 1;
         }
     }
 }

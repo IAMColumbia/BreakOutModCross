@@ -4,7 +4,9 @@
 
 \## **Game** **Functionality** **Changes**
 
-* Put autopaddle = true statement into effect only if game is in DEBUG. Also doubles ball if 
+* Put autopaddle = true statement into effect only if game is in DEBUG. Also doubles ball speed if in DEBUG for testing purposes.
+
+  * Added autopaddle toggle on S/Down key pressed in DEBUG
 
 
 
@@ -16,7 +18,9 @@
 
 \## **Score Manager Changes**
 
-* 
+* Player actually loses a life upon ball hitting the "floor" 
+
+  * ScoreManager flags when lives are equal to 0; Game requests this info from it's ScoreManager score and handle end of game logic
 
 
 

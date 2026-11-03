@@ -12,10 +12,11 @@ namespace BreakoutBoring
     {
 
         public BallState State { get; private set; }
+        private ScoreManager scoreManager;
 
         GameConsole console;
 
-        public Ball(Game game)
+        public Ball(Game game, ScoreManager ScoreManager)
             : base(game)
         {
             this.State = BallState.OnPaddleStart;
@@ -26,6 +27,13 @@ namespace BreakoutBoring
             {
                 console = new GameConsole(this.Game);
                 this.Game.Components.Add(console);  //add a new game console to Game
+            }
+            //Lazy load ScoreManager
+            scoreManager = ScoreManager;
+            if (scoreManager != null)
+            {
+                scoreManager = new ScoreManager(this.Game);
+                this.Game.Components.Add(scoreManager);
             }
 #if DEBUG
             this.ShowMarkers = true;
@@ -41,7 +49,7 @@ namespace BreakoutBoring
         {
             this.Speed = 190; //hard coded speed TODO fix this
 #if DEBUG
-            this.Speed *=2; //double speed in debug mode
+            this.Speed *= 2; //double speed in debug mode
 #endif
             this.Direction = new Vector2(1, -1); //hard coded launch direction TODO fix this
             this.State = BallState.Playing;
@@ -93,6 +101,7 @@ namespace BreakoutBoring
             if (this.Location.Y + this.spriteTexture.Height > this.Game.GraphicsDevice.Viewport.Height)
             {
                 this.resetBall(gameTime);
+                scoreManager.LoseLife();
             }
 
             //Top

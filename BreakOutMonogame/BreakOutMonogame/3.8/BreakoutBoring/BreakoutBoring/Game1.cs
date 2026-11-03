@@ -24,6 +24,7 @@ namespace BreakoutBoring
         Ball ball;
 
         ScoreManager score;
+        bool gameOver = false;
 
         public Game1()
             : base()
@@ -44,11 +45,11 @@ namespace BreakoutBoring
             this.Components.Add(score);
 
             //GameComponents
-            ball = new Ball(this); //Ball first paddle and block manager depend on ball
+            ball = new Ball(this, score); //Ball first paddle and block manager depend on ball
             this.Components.Add(ball);
             paddle = new Paddle(this, ball);
             this.Components.Add(paddle);
-            
+
             bm = new BlockManager(this, ball);
             this.Components.Add(bm);
         }
@@ -74,7 +75,7 @@ namespace BreakoutBoring
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
+
             base.LoadContent();
         }
 
@@ -87,6 +88,18 @@ namespace BreakoutBoring
             // TODO: Unload any non ContentManager content here
         }
 
+        public void EndGame()
+        {
+            if (!gameOver)
+            {
+                gameOver = true;
+                console.GameConsoleWrite("Lost Game");
+                paddle.Dispose();
+                ball.Dispose();
+            }
+        }
+
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -96,8 +109,14 @@ namespace BreakoutBoring
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
-            base.Update(gameTime);
+            if (score.CheckForEnd())
+            {
+                EndGame();
+            }
+            else
+            {
+                base.Update(gameTime);
+            }
         }
 
         /// <summary>
@@ -107,7 +126,7 @@ namespace BreakoutBoring
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            
+
             base.Draw(gameTime);
         }
     }
