@@ -141,6 +141,16 @@ namespace BreakoutBoring
             }
         }
 
+        public void ResetBlocks()
+        {
+            Blocks.Clear();
+            blocksToRemove.Clear();
+
+            Height = 1;
+
+            LoadLevel();
+        }
+
         /// <summary>
         /// Block Manager Draws blocks they don't draw themselves
         /// </summary>

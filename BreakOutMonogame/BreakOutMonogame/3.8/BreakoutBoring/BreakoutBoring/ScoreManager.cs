@@ -11,7 +11,7 @@ namespace BreakoutBoring
         public static int Lives;
         public static int Level;
         public static int Score;
-        public Game _game;
+        public Game1 _game;
 
         Texture2D paddle;   //Texture for drawing lives left scoremanager is also the GUI/HUD
 
@@ -19,10 +19,10 @@ namespace BreakoutBoring
         Vector2 scoreLoc, livesLoc, levelLoc; //Locations to draw GUI elements
 
 
-        public ScoreManager(Game game)
+        public ScoreManager(Game game, Game1 Game)
             : base(game)
         {
-            _game = game;
+            _game = Game;
             SetupNewGame();
         }
 
@@ -78,7 +78,7 @@ namespace BreakoutBoring
         public void NextLevel()
         {
             Level++;
-
+            _game.ShowTextScreen();
         }
     }
 }

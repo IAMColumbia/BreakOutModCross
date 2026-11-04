@@ -46,7 +46,7 @@ namespace BreakoutBoring
 #endif
             this.Components.Add(input);
 
-            score = new ScoreManager(this);
+            score = new ScoreManager(this, this);
             this.Components.Add(score);
 
             //GameComponents
@@ -103,11 +103,50 @@ namespace BreakoutBoring
             {
                 gameOver = true;
                 console.GameConsoleWrite("Lost Game");
-                ShowTextScreen("Game Over! Press ESC to exit or ENTER to try again.");
+                ShowTextScreen();
             }
         }
 
-        public void ShowTextScreen(string message)
+        public void ResetGame()
+        {
+            gameOver = false;
+            onTextScreen = false;
+
+            ball.SetInitialLocation();
+            paddle.SetInitialLocation();
+
+            bm.ResetBlocks();
+
+            ScoreManager.Lives = 3;
+            ScoreManager.Level = 1;
+            ScoreManager.Score = 0;
+
+            foreach (GameComponent component in Components)
+            {
+                component.Enabled = true;
+
+                if (component is DrawableGameComponent drawable)
+                    drawable.Visible = true;
+            }
+        }
+
+        public void NextLevel()
+        {
+            onTextScreen = false;
+
+            ball.SetInitialLocation();
+            paddle.SetInitialLocation();
+
+            foreach (GameComponent component in Components)
+            {
+                component.Enabled = true;
+
+                if (component is DrawableGameComponent drawable)
+                    drawable.Visible = true;
+            }
+        }
+
+        public void ShowTextScreen()
         {
             foreach (GameComponent component in Components)
             {
@@ -116,8 +155,6 @@ namespace BreakoutBoring
                 if (component is DrawableGameComponent drawable)
                     drawable.Visible = false;
             }
-            endMessage = message;
-            console.GameConsoleWrite(message);
             onTextScreen = true;
         }
 
@@ -129,39 +166,33 @@ namespace BreakoutBoring
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState keyboard = Keyboard.GetState();
+
+            if (onTextScreen)
+            {
+                if (keyboard.IsKeyDown(Keys.Enter))
+                {
+                    if (!gameOver) { NextLevel(); }
+                    else { ResetGame(); }
+                } // test if this stille scapes on escape
+
+                return;
+            }
+
             if (score.CheckForEnd())
             {
                 EndGame();
+                return;
             }
-            if (onTextScreen)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                {
-                    if (gameOver)
-                    {
-                        gameOver = false;
-                        score = new ScoreManager(this);
-                        bm = new BlockManager(this, ball, score);
-                    }
-                    onTextScreen = false;
-                    ball.SetInitialLocation();
-                    paddle.SetInitialLocation();
-                    foreach (GameComponent component in Components)
-                    {
-                        component.Enabled = true;
-                        if (component is DrawableGameComponent drawable)
-                            drawable.Visible = true;
-                    }
 
-                }
-            }
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+                keyboard.IsKeyDown(Keys.Escape))
+            {
                 Exit();
-
-            else
-            {
-                base.Update(gameTime);
+                return;
             }
+
+            base.Update(gameTime);
         }
 
         /// <summary>
@@ -171,6 +202,39 @@ namespace BreakoutBoring
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            if (onTextScreen)
+            {
+                spriteBatch.Begin();
+
+                // Darken the whole screen
+                spriteBatch.Draw(
+                    overlayTexture,
+                    GraphicsDevice.Viewport.Bounds,
+                    Color.Black * 0.7f
+                );
+
+                string instructions = "";
+                if (!gameOver) { instructions = endMessage + "Press ENTER to continue\nPress ESC to exit\nScore: " + ScoreManager.Score; }
+                else instructions = endMessage + "Game Over!\nPress ENTER to continue\nPress ESC to exit";
+
+                Vector2 textSize = endScreenFont.MeasureString(instructions);
+
+                Vector2 textPosition = new Vector2(
+                    (GraphicsDevice.Viewport.Width - textSize.X) / 2,
+                    (GraphicsDevice.Viewport.Height - textSize.Y) / 2
+                );
+
+                spriteBatch.DrawString(
+                    endScreenFont,
+                    instructions,
+                    textPosition,
+                    Color.White
+                );
+
+                spriteBatch.End();
+                return;
+            }
 
             base.Draw(gameTime);
         }

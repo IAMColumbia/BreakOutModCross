@@ -28,13 +28,13 @@ namespace BreakoutBoring
                 console = new GameConsole(this.Game);
                 this.Game.Components.Add(console);  //add a new game console to Game
             }
-            //Lazy load ScoreManager
+            //Lazy load ScoreManager - removed lazy load because im lazy, ironically (dont want to add instance of game1 here)
             scoreManager = ScoreManager;
-            if (scoreManager != null)
-            {
-                scoreManager = new ScoreManager(this.Game);
-                this.Game.Components.Add(scoreManager);
-            }
+            //if (scoreManager != null)
+            //{
+            //    scoreManager = new ScoreManager(this.Game, this.Game);
+            //    this.Game.Components.Add(scoreManager);
+            //}
 #if DEBUG
             this.ShowMarkers = true;
 #endif
@@ -49,7 +49,7 @@ namespace BreakoutBoring
         {
             this.Speed = 190; //hard coded speed TODO fix this
 #if DEBUG
-            this.Speed *= 3; //double speed in debug mode
+            this.Speed *= 5; //double speed in debug mode
 #endif
             this.Direction = new Vector2(1, -1); //hard coded launch direction TODO fix this
             this.State = BallState.Playing;
