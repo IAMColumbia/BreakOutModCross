@@ -121,22 +121,21 @@ namespace BreakoutBoring
         {
             foreach (MonogameBlock b in Blocks)
             {
-                if (b.Enabled) //Only chack active blocks
+                if (!b.Enabled)
+                    continue;
+
+                if (b.Intersects(ball))
                 {
-                    b.Update(gameTime); //Update Block
-                    //Ball Collision
-                    if (b.Intersects(ball)) //chek rectagle collision between ball and current block 
-                    {
-                        //hit
-                        b.HitByBall(ball);
-                        if (b.BlockState == BlockState.Broken)
-                            blocksToRemove.Add(b);  //Ball is hit add it to remove list
-                        if (!reflected) //only reflect once
-                        {
-                            ball.Reflect(b);
-                            this.reflected = true;
-                        }
-                    }
+                    // Only hit one block this update
+                    b.HitByBall(ball);
+
+                    if (b.BlockState == BlockState.Broken)
+                        blocksToRemove.Add(b);
+
+                    ball.Reflect(b);
+
+                    // Stop checking other blocks
+                    break;
                 }
             }
         }

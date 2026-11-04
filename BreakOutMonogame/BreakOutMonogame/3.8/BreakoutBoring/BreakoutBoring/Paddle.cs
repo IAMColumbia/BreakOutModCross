@@ -25,7 +25,7 @@ namespace BreakoutBoring
 
 #if DEBUG
             this.autopaddle = true;
-            this.Speed *= 5; //double speed in debug mode
+            this.Speed *= 2; //double speed in debug mode
 #endif
 
             this.ball = b;
